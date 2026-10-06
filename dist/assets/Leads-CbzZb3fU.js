@@ -1,0 +1,1 @@
+import{j as o,G as r}from"./index-BYyTYv6t.js";import{C as e}from"./ComingSoon-CBkQpnXK.js";function i(){return o.jsx(e,{icon:r,title:"Leads",description:"Refer customers and follow their loan progress."})}export{i as default};

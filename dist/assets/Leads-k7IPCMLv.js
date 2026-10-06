@@ -1,1 +1,0 @@
-import{j as o,G as t}from"./index-CKL7YaU3.js";import{C as s}from"./ComingSoon-BMaDpEog.js";function a(){return o.jsx(s,{icon:t,title:"Leads",description:"Leads assigned to you for your loan type."})}export{a as default};

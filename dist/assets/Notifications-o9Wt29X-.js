@@ -1,0 +1,1 @@
+import{j as i,H as o}from"./index-BYyTYv6t.js";import{C as n}from"./ComingSoon-CBkQpnXK.js";function e(){return i.jsx(n,{icon:o,title:"Notifications",description:"Send and manage in-app notifications for every panel."})}export{e as default};

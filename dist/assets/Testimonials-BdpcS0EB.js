@@ -1,1 +1,0 @@
-import{j as o,aJ as s}from"./index-CKL7YaU3.js";import{C as i}from"./ComingSoon-BMaDpEog.js";function e(){return o.jsx(i,{icon:s,title:"Testimonials",description:"Collect and showcase customer testimonials on company landing pages."})}export{e as default};

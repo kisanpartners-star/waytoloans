@@ -1,1 +1,0 @@
-import{j as a,V as o}from"./index-CKL7YaU3.js";import{C as s}from"./ComingSoon-BMaDpEog.js";function i(){return a.jsx(s,{icon:o,title:"Broadcast, Mails & Campaigns",description:"Compose email broadcasts and campaigns to companies, banks, DSAs and connectors."})}export{i as default};

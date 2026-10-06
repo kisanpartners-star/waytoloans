@@ -1,1 +1,0 @@
-import{j as i,K as o}from"./index-CKL7YaU3.js";import{C as t}from"./ComingSoon-BMaDpEog.js";function a(){return i.jsx(t,{icon:o,title:"Applications",description:"Process and track applications end-to-end."})}export{a as default};
