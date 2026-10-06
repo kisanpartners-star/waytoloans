@@ -70,15 +70,9 @@ app.use(
   })
 );
 
-// Serve frontend
-app.use(express.static(path.join(__dirname, 'dist')));
-
-// Frontend routes
-app.use(express.static(path.join(__dirname, 'dist')));
-
-app.get(/^(?!\/api).*/, (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
+// Serve the frontend build generated in backend/dist.
+const frontendDist = path.join(__dirname, '..', 'dist');
+app.use(express.static(frontendDist));
 
 if (env.nodeEnv !== 'test') {
   app.use(
@@ -103,6 +97,11 @@ app.use(
 
 // API
 app.use('/api', apiLimiter, require('./routes'));
+
+// Frontend routes
+app.get(/^(?!\/api).*/, (req, res) => {
+  res.sendFile(path.join(frontendDist, 'index.html'));
+});
 
 // 404
 app.use(notFound);
