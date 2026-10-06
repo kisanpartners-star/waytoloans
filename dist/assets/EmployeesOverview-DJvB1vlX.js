@@ -1,0 +1,1 @@
+import{j as e,E as o}from"./index-CKL7YaU3.js";import{C as r}from"./ComingSoon-BMaDpEog.js";function n(){return e.jsx(r,{icon:o,title:"Employees Overview",description:"See every bank employee across your network in one place."})}export{n as default};

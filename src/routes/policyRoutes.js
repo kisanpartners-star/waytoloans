@@ -1,0 +1,12 @@
+const router = require('express').Router();
+const c = require('../controllers/policyController');
+const v = require('../validators/policyValidator');
+const { list } = require('../validators/listValidator');
+const { validate } = require('../middleware/validate');
+router.get('/', validate(list, 'query'), c.list);
+router.get('/:id', c.get);
+router.post('/', validate(v.upsert), c.create);
+router.put('/:id', validate(v.upsert), c.update);
+router.patch('/:id/status', validate(v.status), c.setStatus);
+router.delete('/:id', c.remove);
+module.exports = router;

@@ -1,0 +1,1 @@
+import{j as o,H as i}from"./index-CKL7YaU3.js";import{C as t}from"./ComingSoon-BMaDpEog.js";function n(){return o.jsx(t,{icon:i,title:"Notifications",description:"Alerts about applications, approvals and policy changes."})}export{n as default};

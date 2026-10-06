@@ -1,0 +1,12 @@
+const router = require('express').Router();
+const c = require('../controllers/companyController');
+const v = require('../validators/companyValidator');
+const { list } = require('../validators/listValidator');
+const { validate } = require('../middleware/validate');
+router.get('/', validate(list, 'query'), c.list);
+router.post('/', validate(v.create), c.create);
+router.get('/:id', c.get);
+router.put('/:id', validate(v.update), c.update);
+router.patch('/:id/action', validate(v.action), c.action);
+router.delete('/:id', c.remove);
+module.exports = router;
