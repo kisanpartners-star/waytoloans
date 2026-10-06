@@ -36,8 +36,6 @@
 // app.use(errorHandler);
 // module.exports = app;
 
-
-
 const path = require('path');
 const express = require('express');
 const helmet = require('helmet');
