@@ -18,11 +18,10 @@ app.use(cors({
 }));
 
 
-app.use(express.static(path.join(__dirname, "dist")));
+app.use(express.static(path.join(__dirname, 'dist')));
 
-// For any non-API route, send back index.html (needed for client-side routing)
 app.get(/^(?!\/api).*/, (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 
