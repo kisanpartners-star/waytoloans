@@ -65,15 +65,16 @@ app.use(
 const frontendDist = path.join(__dirname, '..', 'dist');
 app.use(express.static(frontendDist));
 
-app.use(
+app.use((req, res, next) => {
+  const requestOrigin = `${req.protocol}://${req.get('host')}`;
   cors({
     origin: (origin, cb) =>
-      !origin || env.clientUrls.includes(origin)
+      !origin || origin === requestOrigin || env.clientUrls.includes(origin)
         ? cb(null, true)
         : cb(new Error('Origin not allowed')),
     credentials: true,
-  })
-);
+  })(req, res, next);
+});
 
 if (env.nodeEnv !== 'test') {
   app.use(
