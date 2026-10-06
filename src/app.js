@@ -16,6 +16,16 @@ app.use(cors({
   origin: (origin, cb) => (!origin || env.clientUrls.includes(origin) ? cb(null, true) : cb(new Error('Origin not allowed'))),
   credentials: true,
 }));
+
+
+app.use(express.static(path.join(__dirname, "dist")));
+
+// For any non-API route, send back index.html (needed for client-side routing)
+app.get(/^(?!\/api).*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
+
 if (env.nodeEnv !== 'test') app.use(morgan(env.nodeEnv === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
