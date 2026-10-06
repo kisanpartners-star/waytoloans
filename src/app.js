@@ -60,6 +60,11 @@ app.use(
   })
 );
 
+// Serve the same-origin frontend build before CORS checks, which are only
+// needed for cross-origin API and upload requests.
+const frontendDist = path.join(__dirname, '..', 'dist');
+app.use(express.static(frontendDist));
+
 app.use(
   cors({
     origin: (origin, cb) =>
@@ -69,10 +74,6 @@ app.use(
     credentials: true,
   })
 );
-
-// Serve the frontend build generated in backend/dist.
-const frontendDist = path.join(__dirname, '..', 'dist');
-app.use(express.static(frontendDist));
 
 if (env.nodeEnv !== 'test') {
   app.use(
