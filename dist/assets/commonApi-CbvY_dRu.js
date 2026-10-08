@@ -1,1 +1,0 @@
-import{D as e,A as o,z as a}from"./index-BYyTYv6t.js";const t={loanTypeOptions:()=>a(o.get("/loan-types/options")),dashboard:p=>a(o.get(`/${p}/dashboard`)),profile:()=>a(o.get("/profile")),updateProfile:p=>e(o.put("/profile",p))};export{t as c};

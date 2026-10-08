@@ -1,0 +1,71 @@
+const mongoose = require('mongoose');
+
+const employeeSchema = new mongoose.Schema({
+  employeeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee' },
+  name: { type: String, trim: true, maxlength: 120 },
+  staffId: { type: String, trim: true, maxlength: 40 },
+  phone: { type: String, trim: true, maxlength: 20 },
+  altPhone: { type: String, trim: true, maxlength: 20 },
+  email: { type: String, lowercase: true, trim: true, maxlength: 254 },
+  personalEmail: { type: String, lowercase: true, trim: true, maxlength: 254 },
+  designation: { type: String, trim: true, maxlength: 120 },
+  branch: { type: String, trim: true, maxlength: 120 },
+  department: { type: String, trim: true, maxlength: 120 },
+  dateOfJoining: Date,
+  status: { type: String, enum: ['active', 'deactive', 'disabled'], default: 'active' },
+  employmentRole: { type: String, trim: true, maxlength: 120 },
+  reportingManager: { type: String, trim: true, maxlength: 120 },
+  loanTypeIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'LoanType' }],
+  photoUrl: { type: String, trim: true, maxlength: 500 },
+  companyAssignments: [{
+    _id: false,
+    companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company' },
+    branches: [{ type: String, trim: true, maxlength: 120 }],
+  }],
+}, { _id: false });
+
+const policySchema = new mongoose.Schema({
+  loanType: { type: String, required: true, trim: true, maxlength: 80 },
+  minimumAge: { type: Number, min: 18, max: 100 },
+  maximumAge: { type: Number, min: 18, max: 100 },
+  minimumMonthlyIncome: { type: Number, min: 0 },
+  minimumCibilScore: { type: Number, min: 0, max: 900 },
+  maximumFoir: { type: Number, min: 0, max: 100 },
+  maximumTenure: { type: Number, min: 1 },
+  minimumLoanAmount: { type: Number, min: 0 },
+  maximumLoanAmount: { type: Number, min: 0 },
+  currentVersion: { type: Number, default: 1 },
+  cityStateRestriction: { type: String, trim: true, maxlength: 500 },
+  employmentTypeRestriction: { type: String, trim: true, maxlength: 300 },
+  requiredDocuments: [{ type: String, trim: true, maxlength: 120 }],
+  manualReview: { type: Boolean, default: false },
+  active: { type: Boolean, default: true },
+  versionHistory: [{ version: Number, updatedAt: Date, settings: mongoose.Schema.Types.Mixed }],
+}, { _id: false });
+
+const schema = new mongoose.Schema({
+  companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true, index: true },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+  bankId: { type: mongoose.Schema.Types.ObjectId, ref: 'Bank', default: null, index: true },
+  bankName: { type: String, trim: true, maxlength: 120, default: '' },
+  authorisedPersonName: { type: String, trim: true, maxlength: 120, default: '' },
+  mobileNumber: { type: String, trim: true, maxlength: 20, default: '' },
+  loginEmail: { type: String, lowercase: true, trim: true, maxlength: 254, default: '' },
+  loginPasswordHash: { type: String, select: false },
+  employeeId: { type: String, trim: true, maxlength: 40, default: '' },
+  loanTypes: [{ type: String, trim: true, maxlength: 80 }],
+  authorisedEmployees: [employeeSchema],
+  branches: [{ type: String, trim: true, maxlength: 120 }],
+  designations: [{ type: String, trim: true, maxlength: 120 }],
+  loanPolicies: [policySchema],
+  informationAccuracyConfirmed: { type: Boolean, default: false },
+  authorisationConfirmed: { type: Boolean, default: false },
+  termsAccepted: { type: Boolean, default: false },
+  dataProtectionAccepted: { type: Boolean, default: false },
+  currentStep: { type: Number, min: 0, max: 5, default: 0 },
+  accountDisabled: { type: Boolean, default: false, index: true },
+  status: { type: String, enum: ['draft', 'pending', 'active', 'rejected', 'disabled'], default: 'draft', index: true },
+  deletedAt: { type: Date, default: null, index: true },
+}, { timestamps: true });
+
+module.exports = mongoose.model('BankRegistration', schema);

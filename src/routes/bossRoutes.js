@@ -6,6 +6,8 @@ const dash = require('../controllers/bossDashboardController');
 router.use(protect, allow('boss'));
 router.get('/dashboard', dash.stats);
 router.use('/companies', require('./companyRoutes'));
+router.use('/employees', require('./bossEmployeeRoutes'));
+router.use('/bank-registrations', require('./bossBankRegistrationRoutes'));
 router.use('/loan-types', require('./loanTypeRoutes'));
 router.use('/policies', require('./policyRoutes'));
 router.use('/settings', require('./settingRoutes'));

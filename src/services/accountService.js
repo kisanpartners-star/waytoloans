@@ -3,8 +3,8 @@ const User = require('../models/User');
 const { hashPassword } = require('../utils/password');
 
 async function createAccount({ Profile, user, profile }) {
-  const { password, ...u } = user;
-  const authUser = await User.create({ ...u, passwordHash: await hashPassword(password) });
+  const { password, passwordHash, ...u } = user;
+  const authUser = await User.create({ ...u, passwordHash: passwordHash || await hashPassword(password) });
   try {
     const doc = await Profile.create({ ...profile, userId: authUser._id, companyId: u.companyId });
     return { user: authUser, profile: doc };
@@ -12,7 +12,12 @@ async function createAccount({ Profile, user, profile }) {
 }
 async function updateAccount({ profileDoc, userPatch = {}, password }) {
   const patch = { ...userPatch };
-  if (password) { patch.passwordHash = await hashPassword(password); patch.passwordChangedAt = new Date(); patch.refreshTokens = []; }
+  if (password) {
+    patch.passwordHash = await hashPassword(password);
+    patch.passwordChangedAt = new Date();
+    patch.mustChangePassword = false;
+    patch.refreshTokens = [];
+  }
   if (Object.keys(patch).length) await User.updateOne({ _id: profileDoc.userId }, patch);
 }
 async function setAccountStatus(profileDoc, status) {

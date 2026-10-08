@@ -1,0 +1,1 @@
+import{j as o,J as i}from"./index-CoG4_VQb.js";import{C as t}from"./ComingSoon-dMTBqAx1.js";function s(){return o.jsx(t,{icon:i,title:"Notifications",description:"Task reminders and updates from your bank."})}export{s as default};

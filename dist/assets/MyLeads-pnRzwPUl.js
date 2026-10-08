@@ -1,0 +1,1 @@
+import{j as t}from"./index-CoG4_VQb.js";import r from"./SalesLeads-D3wjZRTa.js";import"./PageHeader-BWbL7yoO.js";import"./Badge-BcXEGldS.js";function i(){return t.jsx(r,{title:"My Leads"})}export{i as default};

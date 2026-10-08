@@ -1,0 +1,1 @@
+import{j as o,aK as n}from"./index-CoG4_VQb.js";import{C as s}from"./ComingSoon-dMTBqAx1.js";function i(){return o.jsx(s,{icon:n,title:"Post Ads",description:"Publish announcements and promotions to company panels and landing pages."})}export{i as default};

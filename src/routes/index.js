@@ -7,11 +7,13 @@ router.use('/auth', require('./authRoutes'));
 router.use('/public', require('./publicRoutes'));
 router.use('/boss', require('./bossRoutes'));
 // published loan types for dropdowns (admin / bank / dsa forms)
-router.get('/loan-types/options', protect, allow('admin', 'bank', 'dsa', 'employee'), loanType.options);
+router.get('/loan-types/options', protect, allow('boss', 'admin', 'bank', 'dsa', 'employee'), loanType.options);
 router.use('/register', require('./registerRoutes'));
 router.use('/profile', require('./profileRoutes'));
 router.use('/admin', require('./adminRoutes'));
 router.use('/bank', require('./bankRoutes'));
+router.use('/bank-portal', require('./bankPortalRoutes'));
+router.use('/sales-manager', require('./salesManagerRoutes'));
 router.use('/employee', require('./employeeRoutes'));
 router.use('/dsa', require('./dsaRoutes'));
 router.use('/connector', require('./connectorRoutes'));

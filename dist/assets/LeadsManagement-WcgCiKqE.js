@@ -1,0 +1,1 @@
+import{j as t}from"./index-CoG4_VQb.js";import e from"./SalesLeads-D3wjZRTa.js";import"./PageHeader-BWbL7yoO.js";import"./Badge-BcXEGldS.js";function s(){return t.jsx(e,{title:"Leads Management"})}export{s as default};

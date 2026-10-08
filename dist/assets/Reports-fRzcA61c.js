@@ -1,1 +1,0 @@
-import{j as o,J as r}from"./index-BYyTYv6t.js";import{C as e}from"./ComingSoon-CBkQpnXK.js";function n(){return o.jsx(e,{icon:r,title:"Reports",description:"Downloadable performance, pipeline and disbursement reports."})}export{n as default};

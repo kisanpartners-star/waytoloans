@@ -1,0 +1,1 @@
+import{A as a,D as o}from"./index-CoG4_VQb.js";import{m as s}from"./crud-D1-A4dZy.js";const r={dashboard:()=>a(o.get("/bank/dashboard")),employees:s("/bank/employees"),dsaOptions:()=>a(o.get("/bank/dsa-options"))};export{r as b};

@@ -1,0 +1,1 @@
+import{j as i}from"./index-CoG4_VQb.js";import t from"./SalesLeads-D3wjZRTa.js";import"./PageHeader-BWbL7yoO.js";import"./Badge-BcXEGldS.js";function p(){return i.jsx(t,{title:"Application Processing",filterStage:"Application Processing"})}export{p as default};

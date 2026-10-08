@@ -21,6 +21,20 @@ module.exports = { companyBlockReason, userBlockReason };
 
 // Employees can only work while their bank is active.
 module.exports.parentBlockReason = async (user) => {
+  if (user.role === 'bankPortal') {
+    const BankPortal = require('../models/BankPortal');
+    const bank = await BankPortal.findOne({ userId: user._id, deletedAt: null });
+    if (!bank || bank.status !== 'active') return 'Your bank portal is not active.';
+    return null;
+  }
+  if (user.role === 'salesManager') {
+    const SalesManager = require('../models/SalesManager');
+    const BankPortal = require('../models/BankPortal');
+    const manager = await SalesManager.findOne({ userId: user._id, deletedAt: null });
+    const bank = manager && await BankPortal.findOne({ _id: manager.bankId, deletedAt: null, status: 'active' });
+    if (!bank || manager.status !== 'active') return 'Your sales account is not active. Please contact your bank administrator.';
+    return null;
+  }
   if (user.role !== 'employee') return null;
   const Employee = require('../models/Employee');
   const Bank = require('../models/Bank');

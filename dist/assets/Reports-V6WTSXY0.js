@@ -1,0 +1,1 @@
+import{j as o,K as r}from"./index-CoG4_VQb.js";import{C as e}from"./ComingSoon-dMTBqAx1.js";function n(){return o.jsx(e,{icon:r,title:"Reports",description:"Downloadable performance, pipeline and disbursement reports."})}export{n as default};

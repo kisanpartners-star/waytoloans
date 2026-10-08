@@ -1,0 +1,1 @@
+import{j as i,N as o}from"./index-CoG4_VQb.js";import{C as t}from"./ComingSoon-dMTBqAx1.js";function a(){return i.jsx(t,{icon:o,title:"Applications",description:"Track every application you have sourced."})}export{a as default};

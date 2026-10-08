@@ -1,1 +1,0 @@
-import{j as o,J as r}from"./index-BYyTYv6t.js";import{C as t}from"./ComingSoon-CBkQpnXK.js";function n(){return o.jsx(t,{icon:r,title:"Reports",description:"Your daily and monthly performance reports."})}export{n as default};

@@ -1,1 +1,0 @@
-import{j as o,K as i}from"./index-BYyTYv6t.js";import{C as t}from"./ComingSoon-CBkQpnXK.js";function e(){return o.jsx(t,{icon:i,title:"Applications",description:"Review loan applications routed to your bank."})}export{e as default};

@@ -1,1 +1,0 @@
-import{j as o,H as t}from"./index-BYyTYv6t.js";import{C as i}from"./ComingSoon-CBkQpnXK.js";function n(){return o.jsx(i,{icon:t,title:"Notifications",description:"Status updates on your referrals."})}export{n as default};

@@ -1,0 +1,1 @@
+import{j as o,q as s}from"./index-CoG4_VQb.js";import{C as i}from"./ComingSoon-dMTBqAx1.js";function r(){return o.jsx(i,{icon:s,title:"Commissions",description:"Configure commission slabs and track payouts for DSAs and connectors."})}export{r as default};

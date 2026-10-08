@@ -1,0 +1,1 @@
+import{j as t}from"./index-CoG4_VQb.js";import e from"./SalesLeads-D3wjZRTa.js";import"./PageHeader-BWbL7yoO.js";import"./Badge-BcXEGldS.js";function i(){return t.jsx(e,{title:"Documents Pending",filterStage:"Documents Requested"})}export{i as default};

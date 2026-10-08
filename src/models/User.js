@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-// One auth collection for all six roles. Profile data of bank/dsa/connector/employee
-// lives in dedicated models (added in the next part) and is linked via userId.
-const ROLES = ['boss', 'admin', 'bank', 'employee', 'dsa', 'connector'];
+// One auth collection for every panel role; profile data is linked via userId.
+const ROLES = ['boss', 'admin', 'bank', 'employee', 'dsa', 'connector', 'bankPortal', 'salesManager'];
 const userSchema = new mongoose.Schema({
   role: { type: String, enum: ROLES, required: true, index: true },
   companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', default: null, index: true },

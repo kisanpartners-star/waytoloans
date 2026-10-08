@@ -1,0 +1,1 @@
+import{j as i,ay as o}from"./index-CoG4_VQb.js";import{C as s}from"./ComingSoon-dMTBqAx1.js";function n(){return i.jsx(s,{icon:o,title:"Visitors",description:"Track visitors across every company portal with live traffic, sources and conversion insights."})}export{n as default};

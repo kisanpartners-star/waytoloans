@@ -1,1 +1,0 @@
-import{z as a,A as o}from"./index-BYyTYv6t.js";import{m as s}from"./crud-96ZO1qOX.js";const r={dashboard:()=>a(o.get("/bank/dashboard")),employees:s("/bank/employees"),dsaOptions:()=>a(o.get("/bank/dsa-options"))};export{r as b};

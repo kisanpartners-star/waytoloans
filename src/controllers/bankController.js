@@ -1,4 +1,5 @@
 const Bank = require('../models/Bank');
+const BankRegistration = require('../models/BankRegistration');
 const Dsa = require('../models/Dsa');
 const Employee = require('../models/Employee');
 const ApiError = require('../utils/ApiError');
@@ -47,6 +48,7 @@ exports.setStatus = asyncHandler(async (req, res) => {
   if (action === 'enable' && ['pending', 'rejected'].includes(b.status)) throw new ApiError(400, 'Approve the registration first');
   if (action === 'approve' || action === 'reject') { b.reviewedAt = new Date(); b.reviewedBy = req.user._id; }
   await setAccountStatus(b, MAP[action]);
+  if (b.registrationId) await BankRegistration.updateOne({ _id: b.registrationId, deletedAt: null }, { status: MAP[action], accountDisabled: action === 'disable' });
   await audit(req, { action: 'STATUS_CHANGE', entity: 'bank', entityId: b._id, meta: { change: action, bankName: b.bankName } });
   res.json({ success: true, message: `Bank ${MAP[action]}`, data: b });
 });
@@ -56,6 +58,7 @@ exports.remove = asyncHandler(async (req, res) => {
   for (const e of emps) await softDeleteAccount(e);
   await Dsa.updateMany({ companyId: req.user.companyId }, { $pull: { bankIds: b._id } });
   await softDeleteAccount(b);
+  if (b.registrationId) await BankRegistration.updateOne({ _id: b.registrationId }, { deletedAt: new Date() });
   await audit(req, { action: 'DELETE', entity: 'bank', entityId: b._id, meta: { bankName: b.bankName, employeesRemoved: emps.length } });
   res.json({ success: true, message: 'Bank deleted' });
 });

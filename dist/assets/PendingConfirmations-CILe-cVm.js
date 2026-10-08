@@ -1,0 +1,1 @@
+import{j as t}from"./index-CoG4_VQb.js";import i from"./SalesLeads-D3wjZRTa.js";import"./PageHeader-BWbL7yoO.js";import"./Badge-BcXEGldS.js";function m(){return t.jsx(i,{title:"Pending Confirmations",filterStage:"Confirmation Requested"})}export{m as default};

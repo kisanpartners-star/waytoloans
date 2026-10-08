@@ -11,6 +11,7 @@ const { hash, signAccess, signRefresh, setAuthCookies, clearAuthCookies } = requ
 const { audit } = require('../utils/audit');
 const { companyBlockReason, userBlockReason, parentBlockReason } = require('../services/accessService');
 const { sendMail } = require('../services/mailService');
+const GLOBAL_ROLES = ['boss', 'bankPortal', 'salesManager'];
 
 const MAX_ATTEMPTS = 5;
 const LOCK_MINUTES = 15;
@@ -32,7 +33,7 @@ async function issueSession(req, res, user) {
 exports.login = asyncHandler(async (req, res) => {
   const { role, companySlug, identifier, password } = req.body;
   let company = null;
-  if (role !== 'boss') {
+  if (!GLOBAL_ROLES.includes(role)) {
     company = await Company.findOne({ slug: companySlug, deletedAt: null });
     if (!company || company.status === 'draft') throw new ApiError(404, 'Company panel not found');
   }
@@ -81,7 +82,7 @@ exports.refresh = asyncHandler(async (req, res) => {
   user.refreshTokens.splice(idx, 1);
   const ub = userBlockReason(user);
   let cb = null;
-  if (user.role !== 'boss') cb = companyBlockReason(await Company.findById(user.companyId));
+  if (!GLOBAL_ROLES.includes(user.role)) cb = companyBlockReason(await Company.findById(user.companyId));
   if (ub || cb) { await user.save(); clearAuthCookies(res); throw new ApiError(403, ub || cb); }
   await issueSession(req, res, user);
   res.json({ success: true, message: 'Token refreshed' });
@@ -123,14 +124,14 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
   const { role, companySlug, email } = req.body;
   const generic = { success: true, message: 'If the account exists, a reset link has been sent to the email.' };
   let company = null;
-  if (role !== 'boss') { company = await Company.findOne({ slug: companySlug, deletedAt: null }); if (!company) return res.json(generic); }
+  if (!GLOBAL_ROLES.includes(role)) { company = await Company.findOne({ slug: companySlug, deletedAt: null }); if (!company) return res.json(generic); }
   const user = await User.findOne({ role, email, companyId: company ? company._id : null, deletedAt: null });
   if (!user) return res.json(generic);
   const raw = crypto.randomBytes(32).toString('hex');
   user.resetTokenHash = hash(raw);
   user.resetTokenExpires = new Date(Date.now() + 30 * 60000);
   await user.save();
-  const prefix = role === 'boss' ? `/${env.bossPanelPath}` : `/${company.slug}/${role}`;
+  const prefix = role === 'boss' ? `/${env.bossPanelPath}` : role === 'bankPortal' ? '/bank-portal' : role === 'salesManager' ? '/sales-manager' : `/${company.slug}/${role}`;
   await sendMail({ to: user.email, subject: 'Reset your Banks Zone password', text: `Use this link within 30 minutes:\n${env.clientUrls[0]}${prefix}/reset-password?token=${raw}` });
   await audit(req, { action: 'PASSWORD_RESET_REQUEST', entity: 'user', entityId: user._id, user });
   res.json(generic);
@@ -141,6 +142,7 @@ exports.resetPassword = asyncHandler(async (req, res) => {
   if (!user) throw new ApiError(400, 'Reset link is invalid or has expired');
   user.passwordHash = await hashPassword(req.body.password);
   user.passwordChangedAt = new Date();
+  user.mustChangePassword = false;
   user.resetTokenHash = undefined; user.resetTokenExpires = undefined;
   user.refreshTokens = []; user.failedAttempts = 0; user.lockUntil = null;
   await user.save();

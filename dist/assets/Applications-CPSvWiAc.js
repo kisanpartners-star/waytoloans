@@ -1,0 +1,1 @@
+import{j as o,N as i}from"./index-CoG4_VQb.js";import{C as t}from"./ComingSoon-dMTBqAx1.js";function e(){return o.jsx(t,{icon:i,title:"Applications",description:"Review loan applications routed to your bank."})}export{e as default};

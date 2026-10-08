@@ -1,0 +1,1 @@
+import{j as r}from"./index-CoG4_VQb.js";import{P as o}from"./ProfileView-BmExy03K.js";import"./PageHeader-BWbL7yoO.js";import"./Badge-BcXEGldS.js";import"./useAsync-C9BNGJmc.js";import"./commonApi-URKJfl3d.js";function s(){return r.jsx(o,{})}export{s as default};

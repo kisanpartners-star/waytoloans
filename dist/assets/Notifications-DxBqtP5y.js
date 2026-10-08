@@ -1,1 +1,0 @@
-import{j as o,H as i}from"./index-BYyTYv6t.js";import{C as t}from"./ComingSoon-CBkQpnXK.js";function s(){return o.jsx(t,{icon:i,title:"Notifications",description:"Task reminders and updates from your bank."})}export{s as default};

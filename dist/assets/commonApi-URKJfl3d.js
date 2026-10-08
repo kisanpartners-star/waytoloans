@@ -1,0 +1,1 @@
+import{E as e,D as o,A as a}from"./index-CoG4_VQb.js";const t={loanTypeOptions:()=>a(o.get("/loan-types/options")),dashboard:p=>a(o.get(`/${p}/dashboard`)),profile:()=>a(o.get("/profile")),updateProfile:p=>e(o.put("/profile",p))};export{t as c};

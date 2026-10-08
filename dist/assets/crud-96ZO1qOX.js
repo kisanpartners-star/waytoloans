@@ -1,1 +1,0 @@
-import{A as p,z as d}from"./index-BYyTYv6t.js";const n=e=>({list:t=>d(p.get(e,{params:t})),get:t=>d(p.get(`${e}/${t}`)),create:t=>p.post(e,t).then(a=>a.data),update:(t,a)=>p.put(`${e}/${t}`,a).then($=>$.data),remove:t=>p.delete(`${e}/${t}`).then(a=>a.data),setStatus:(t,a)=>p.patch(`${e}/${t}/status`,a).then($=>$.data)});export{n as m};

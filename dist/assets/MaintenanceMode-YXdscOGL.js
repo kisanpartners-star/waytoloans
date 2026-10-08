@@ -1,0 +1,1 @@
+import{j as o,aA as e}from"./index-CoG4_VQb.js";import{C as n}from"./ComingSoon-dMTBqAx1.js";function i(){return o.jsx(n,{icon:e,title:"Maintenance Mode",description:"Put a single company or the whole platform into maintenance with a custom message and schedule."})}export{i as default};
