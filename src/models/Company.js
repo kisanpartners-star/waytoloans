@@ -4,6 +4,8 @@ const companySchema = new mongoose.Schema({
   slug: { type: String, required: true, unique: true, index: true },
   gstin: { type: String, required: true, uppercase: true, trim: true },
   address: { type: String, required: true, trim: true, maxlength: 400 },
+  state: { type: String, trim: true, maxlength: 80 },
+  district: { type: String, trim: true, maxlength: 80 },
   phone: { type: String, required: true, trim: true },
   email: { type: String, required: true, lowercase: true, trim: true },
   altMobile: { type: String, trim: true },

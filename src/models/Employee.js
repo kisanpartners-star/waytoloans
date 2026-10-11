@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const s = new mongoose.Schema({
   companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', index: true },
   bankId: { type: mongoose.Schema.Types.ObjectId, ref: 'Bank', index: true },
+  bankIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Bank', index: true }],
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
   name: { type: String, trim: true, maxlength: 120 },
   employeeId: { type: String, trim: true, maxlength: 40 },
@@ -17,6 +18,7 @@ const s = new mongoose.Schema({
   photoUrl: { type: String, default: '' },
   employmentRole: { type: String, trim: true, maxlength: 120 },
   reportingManager: { type: String, trim: true, maxlength: 120 },
+  branch: { type: String, trim: true, maxlength: 120 },
   loanTypeIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'LoanType' }],
   companyAssignments: [{
     _id: false,
@@ -25,7 +27,8 @@ const s = new mongoose.Schema({
   }],
   isDraft: { type: Boolean, default: false, index: true },
   accountDisabled: { type: Boolean, default: false, index: true },
-  status: { type: String, enum: ['active', 'deactive', 'disabled', 'blocked'], default: 'active', index: true },
+  selfRegistered: { type: Boolean, default: false, index: true },
+  status: { type: String, enum: ['active', 'deactive', 'disabled', 'blocked', 'pending', 'rejected'], default: 'active', index: true },
   deletedAt: { type: Date, default: null, index: true },
 }, { timestamps: true });
 s.index({ employeeId: 1 }, {

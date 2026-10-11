@@ -11,9 +11,21 @@ const conn = require('../controllers/connectorController'); const cv = require('
 const dsa = require('../controllers/dsaController'); const dv = require('../validators/dsaValidator');
 const admin = require('../controllers/adminController'); const pv = require('../validators/profileValidator');
 const dash = require('../controllers/dashboardController');
+const submissions = require('../controllers/loanSubmissionController');
+const employees = require('../controllers/companyEmployeeController');
+const employeeValidator = require('../validators/companyEmployeeValidator');
+const { employeePhotoUpload } = require('../middleware/upload');
 
 router.use(protect, allow('admin'), requireTenant);
 router.get('/dashboard', dash.admin);
+router.get('/applications', validate(list, 'query'), submissions.list);
+router.get('/applications/:id/documents/:documentId', submissions.downloadDocument);
+router.get('/employees/options', employees.options);
+router.get('/employees', validate(list, 'query'), employees.list);
+router.post('/employees', employeePhotoUpload.single('photo'), validate(employeeValidator.create), employees.create);
+router.put('/employees/:id', employeePhotoUpload.single('photo'), validate(employeeValidator.update), employees.update);
+router.patch('/employees/:id/status', validate(employeeValidator.status), employees.setStatus);
+router.delete('/employees/:id', employees.remove);
 
 router.get('/banks/options', bank.options);
 router.get('/banks', validate(list, 'query'), bank.list);

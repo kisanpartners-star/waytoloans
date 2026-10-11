@@ -30,9 +30,18 @@ module.exports.parentBlockReason = async (user) => {
   if (user.role === 'salesManager') {
     const SalesManager = require('../models/SalesManager');
     const BankPortal = require('../models/BankPortal');
+    const Bank = require('../models/Bank');
+    const Company = require('../models/Company');
     const manager = await SalesManager.findOne({ userId: user._id, deletedAt: null });
-    const bank = manager && await BankPortal.findOne({ _id: manager.bankId, deletedAt: null, status: 'active' });
+    const bank = manager && (manager.bankType === 'bank'
+      ? await Bank.findOne({ _id: manager.bankId, deletedAt: null, status: 'active' })
+      : await BankPortal.findOne({ _id: manager.bankId, deletedAt: null, status: 'active' }));
     if (!bank || manager.status !== 'active') return 'Your sales account is not active. Please contact your bank administrator.';
+    if (manager.bankType === 'bank') {
+      const company = await Company.findOne({ _id: bank.companyId, deletedAt: null });
+      const reason = companyBlockReason(company);
+      if (reason) return reason;
+    }
     return null;
   }
   if (user.role !== 'employee') return null;
@@ -40,7 +49,9 @@ module.exports.parentBlockReason = async (user) => {
   const Bank = require('../models/Bank');
   const emp = await Employee.findOne({ userId: user._id, deletedAt: null });
   if (!emp) return 'Employee profile not found.';
-  const bank = await Bank.findOne({ _id: emp.bankId, deletedAt: null });
-  if (!bank || bank.status !== 'active') return 'Your bank account is not active. Please contact your bank administrator.';
+  const bankIds = [...new Set([...(emp.bankIds || []).map(String), ...(emp.bankId ? [String(emp.bankId)] : [])])];
+  if (bankIds.length && !await Bank.exists({ _id: { $in: bankIds }, companyId: emp.companyId, deletedAt: null, status: 'active' })) {
+    return 'None of your assigned bank accounts are active. Please contact your company administrator.';
+  }
   return null;
 };

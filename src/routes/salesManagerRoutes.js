@@ -4,10 +4,14 @@ const validator = require('../validators/bankPortalValidator');
 const { protect } = require('../middleware/auth');
 const { allow } = require('../middleware/role');
 const { validate } = require('../middleware/validate');
+const submissions = require('../controllers/loanSubmissionController');
+const { list } = require('../validators/listValidator');
 
 router.use(protect, allow('salesManager'));
 router.get('/options', controller.companyOptions);
 router.get('/dashboard', controller.salesDashboard);
+router.get('/submitted-applications', validate(list, 'query'), submissions.list);
+router.get('/submitted-applications/:id/documents/:documentId', submissions.downloadDocument);
 router.get('/leads', validate(validator.leadQuery, 'query'), controller.leads);
 router.post('/leads', validate(validator.lead), controller.saveLead);
 router.put('/leads/:id', validate(validator.lead), controller.saveLead);

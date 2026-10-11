@@ -4,6 +4,8 @@ const base = {
   name: Joi.string().trim().min(2).max(120).required(),
   gstin: Joi.string().trim().uppercase().pattern(GSTIN).required().messages({ 'string.pattern.base': 'Enter a valid 15-character GSTIN' }),
   address: Joi.string().trim().min(5).max(400).required(),
+  state: Joi.string().trim().min(2).max(80).required(),
+  district: Joi.string().trim().min(2).max(80).required(),
   phone: phone.required(),
   email: Joi.string().email().lowercase().required(),
   altMobile: phone.allow('', null),

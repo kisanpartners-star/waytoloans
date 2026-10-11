@@ -6,11 +6,16 @@ const fields = {
   email: Joi.string().email().lowercase().required(),
   phone: phone.allow('', null),
   loanTypeId: objectId.required(), // SINGLE loan type
-  dsas: Joi.array().items(Joi.object({ dsaId: objectId.required(), branch: Joi.string().trim().max(120).allow('', null) })).max(50).default([]), // MULTIPLE rows
+  companyAssignments: Joi.array().items(Joi.object({
+    companyId: objectId.required(),
+    branches: Joi.array().items(Joi.string().trim().max(120)).default([]),
+  })).min(1).unique('companyId').required(),
+  dsas: Joi.array().items(Joi.object({ dsaId: objectId.required(), branch: Joi.string().trim().max(120).allow('', null) })).max(50),
 };
 exports.create = Joi.object({ ...fields, password, confirmPassword: Joi.any().valid(Joi.ref('password')).required().messages({ 'any.only': 'Passwords do not match' }) });
 exports.update = Joi.object({
   ...fields,
+  companyAssignments: fields.companyAssignments.optional(),
   password: Joi.string().pattern(PASSWORD_REGEX).allow('', null).messages({ 'string.pattern.base': PASSWORD_MESSAGE }),
   confirmPassword: Joi.any().valid(Joi.ref('password')).messages({ 'any.only': 'Passwords do not match' }),
 });

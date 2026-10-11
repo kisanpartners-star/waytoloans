@@ -1,0 +1,1 @@
+import{j as t}from"./index-COaLGlsY.js";import{S as o}from"./SubmittedApplicationsPage-wnaygpzJ.js";import"./PageHeader-DbTgt8GX.js";import"./submittedApplicationsApi-B74AAzQ2.js";function a(){return t.jsx(o,{endpoint:"/employee/applications",title:"Assigned Applications",subtitle:"Connector loan applications routed to you by the bank."})}export{a as default};

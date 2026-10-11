@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
-  bankId: { type: mongoose.Schema.Types.ObjectId, ref: 'BankPortal', required: true, index: true },
+  bankId: { type: mongoose.Schema.Types.ObjectId, required: true, index: true },
+  bankType: { type: String, enum: ['bankPortal', 'bank'], default: 'bankPortal', index: true },
   managerId: { type: mongoose.Schema.Types.ObjectId, ref: 'SalesManager', required: true, index: true },
   companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true, index: true },
   leadId: { type: String, required: true, trim: true, maxlength: 40, unique: true },

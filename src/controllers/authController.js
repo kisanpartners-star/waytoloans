@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken');
 const env = require('../config/env');
 const User = require('../models/User');
 const Company = require('../models/Company');
+const Bank = require('../models/Bank');
+const BankRegistration = require('../models/BankRegistration');
+const SalesManager = require('../models/SalesManager');
 const Setting = require('../models/Setting');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
@@ -38,17 +41,66 @@ exports.login = asyncHandler(async (req, res) => {
     if (!company || company.status === 'draft') throw new ApiError(404, 'Company panel not found');
   }
   const id = identifier.toLowerCase();
-  const user = await User.findOne({ role, companyId: company ? company._id : null, deletedAt: null, $or: [{ email: id }, { loginId: identifier }] }).select('+passwordHash +refreshTokens');
+  let user = await User.findOne({ role, companyId: company ? company._id : null, deletedAt: null, $or: [{ email: id }, { loginId: identifier }] }).select('+passwordHash +refreshTokens');
+  let verifiedBankLogin = false;
   const fail = async (status, msg, why) => {
     await audit(req, { action: 'LOGIN_FAILED', entity: 'auth', meta: { identifier, role, why }, success: false, user: user || { role, name: identifier }, companyId: company ? company._id : null });
     throw new ApiError(status, msg);
   };
+  if (role === 'bankPortal') {
+    const bankProfiles = await Bank.find({ email: id, registrationId: { $ne: null }, deletedAt: null }).select('userId companyId registrationId status').lean();
+    const candidates = await User.find({
+      _id: { $in: bankProfiles.map((bank) => bank.userId) },
+      role: 'bank',
+      email: id,
+      deletedAt: null,
+    }).select('+passwordHash +refreshTokens');
+    const matchingUsers = [];
+    for (const candidate of candidates) {
+      if (await comparePassword(password, candidate.passwordHash)) matchingUsers.push(candidate);
+    }
+    const portalPasswordMatches = user && await comparePassword(password, user.passwordHash);
+    if (matchingUsers.length > 1 || (matchingUsers.length === 1 && portalPasswordMatches)) {
+      return fail(409, 'These credentials match more than one bank account. Sign in from the company Bank login page.', 'ambiguous_bank_account');
+    }
+    if (matchingUsers.length === 1) {
+      user = matchingUsers[0];
+      const bank = bankProfiles.find((profile) => String(profile.userId) === String(user._id));
+      company = await Company.findOne({ _id: user.companyId, deletedAt: null });
+      const companyReason = companyBlockReason(company);
+      if (companyReason) return fail(403, companyReason, 'company_status');
+      verifiedBankLogin = true;
+      if (user.status === 'pending' && bank?.status === 'pending') {
+        const registration = await BankRegistration.findOne({ _id: bank.registrationId, deletedAt: null });
+        if (registration?.status === 'pending' && !registration.accountDisabled) {
+          user.status = 'active';
+          bank.status = 'active';
+          registration.status = 'active';
+          await Promise.all([user.save(), Bank.updateOne({ _id: bank._id }, { status: 'active' }), registration.save()]);
+        }
+      }
+    } else if (!user && candidates.length === 1) {
+      user = candidates[0];
+    }
+  }
+  if (!user && role === 'salesManager') {
+    const managers = await SalesManager.find({ employeeId: identifier, deletedAt: null }).select('userId').lean();
+    const candidates = await User.find({ _id: { $in: managers.map((manager) => manager.userId) }, role, deletedAt: null })
+      .select('+passwordHash +refreshTokens');
+    const matching = [];
+    for (const candidate of candidates) {
+      if (await comparePassword(password, candidate.passwordHash)) matching.push(candidate);
+    }
+    if (matching.length > 1) return fail(409, 'This employee ID matches multiple accounts. Sign in with your email address.', 'ambiguous_employee_id');
+    if (matching.length === 1) user = matching[0];
+    else if (candidates.length === 1) user = candidates[0];
+  }
   if (!user) return fail(401, 'Invalid credentials', 'unknown_user');
   if (user.lockUntil && user.lockUntil > new Date()) {
     const mins = Math.ceil((user.lockUntil - Date.now()) / 60000);
     return fail(423, `Account locked after repeated failures. Try again in ${mins} minute(s).`, 'locked');
   }
-  if (!(await comparePassword(password, user.passwordHash))) {
+  if (!verifiedBankLogin && !(await comparePassword(password, user.passwordHash))) {
     user.failedAttempts += 1;
     if (user.failedAttempts >= MAX_ATTEMPTS) { user.lockUntil = new Date(Date.now() + LOCK_MINUTES * 60000); user.failedAttempts = 0; }
     await user.save();

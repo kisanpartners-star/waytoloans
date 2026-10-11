@@ -8,7 +8,8 @@ const assignment = new mongoose.Schema({
 
 const schema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true, index: true },
-  bankId: { type: mongoose.Schema.Types.ObjectId, ref: 'BankPortal', required: true, index: true },
+  bankId: { type: mongoose.Schema.Types.ObjectId, required: true, index: true },
+  bankType: { type: String, enum: ['bankPortal', 'bank'], default: 'bankPortal', index: true },
   name: { type: String, required: true, trim: true, maxlength: 120 },
   employeeId: { type: String, required: true, trim: true, maxlength: 40 },
   email: { type: String, required: true, lowercase: true, trim: true },

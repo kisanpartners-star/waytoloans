@@ -72,15 +72,18 @@ exports.bank = asyncHandler(async (req, res) => {
 
 exports.employee = asyncHandler(async (req, res) => {
   const companyId = req.user.companyId;
-  const emp = await Employee.findOne({ userId: req.user._id, companyId, deletedAt: null }).populate('loanTypeId', 'name').populate('bankId', 'bankName');
+  const emp = await Employee.findOne({ userId: req.user._id, companyId, deletedAt: null })
+    .populate('loanTypeId', 'name').populate('bankId', 'bankName').populate('bankIds', 'bankName');
   if (!emp) throw new ApiError(403, 'Employee profile not found');
+  const employeeBankIds = [...new Set([...(emp.bankIds || []).map((bank) => String(bank._id)), ...(emp.bankId?._id ? [String(emp.bankId._id)] : [])])];
   const [teammates, sameLoan, loginsMonth, loginsToday] = await Promise.all([
-    Employee.countDocuments({ companyId, bankId: emp.bankId._id, deletedAt: null, status: 'active', _id: { $ne: emp._id } }),
-    Employee.countDocuments({ companyId, bankId: emp.bankId._id, loanTypeId: emp.loanTypeId?._id, deletedAt: null, status: 'active', _id: { $ne: emp._id } }),
+    Employee.countDocuments({ companyId, $or: [{ bankId: { $in: employeeBankIds } }, { bankIds: { $in: employeeBankIds } }], deletedAt: null, status: 'active', _id: { $ne: emp._id } }),
+    Employee.countDocuments({ companyId, $or: [{ bankId: { $in: employeeBankIds } }, { bankIds: { $in: employeeBankIds } }], loanTypeId: emp.loanTypeId?._id, deletedAt: null, status: 'active', _id: { $ne: emp._id } }),
     loginCount({ userId: req.user._id }, daysAgo(29)), loginCount({ userId: req.user._id }, startOfDay()),
   ]);
   const cards = { linkedDsas: emp.dsas.length, bankTeammates: teammates, teammatesOnSameLoanType: sameLoan, loginsToday, loginsLast30Days: loginsMonth, accountAgeDays: ageInDays(emp.createdAt) };
-  res.json({ success: true, data: { cards, info: { bank: emp.bankId?.bankName, loanType: emp.loanTypeId?.name, employeeId: emp.employeeId, status: emp.status }, dsas: emp.dsas } });
+  const bankNames = [...new Set([...(emp.bankIds || []).map((bank) => bank.bankName), emp.bankId?.bankName].filter(Boolean))];
+  res.json({ success: true, data: { cards, info: { bank: bankNames.join(', '), loanType: emp.loanTypeId?.name, employeeId: emp.employeeId, status: emp.status }, dsas: emp.dsas } });
 });
 
 exports.dsa = asyncHandler(async (req, res) => {

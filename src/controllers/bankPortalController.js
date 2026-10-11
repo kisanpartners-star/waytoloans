@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const BankPortal = require('../models/BankPortal');
+const Bank = require('../models/Bank');
 const Company = require('../models/Company');
 const LoanType = require('../models/LoanType');
 const SalesManager = require('../models/SalesManager');
@@ -38,26 +39,36 @@ const activeCompanyIds = async (assignments) => {
 const managerFor = async (userId) => {
   const manager = await SalesManager.findOne({ userId, deletedAt: null });
   if (!manager) throw new ApiError(404, 'Sales employee profile not found');
-  const bank = await BankPortal.findOne({ _id: manager.bankId, deletedAt: null, status: 'active' });
-  if (!bank) throw new ApiError(403, 'The bank portal for this account is not active');
-  const bankCompanyIds = new Set(bank.companyAssignments.map((item) => String(item.companyId)));
-  const activeIds = new Set(await activeCompanyIds(manager.companyAssignments));
-  manager.companyAssignments = manager.companyAssignments.filter((item) => {
-    const companyId = String(item.companyId);
-    if (!bankCompanyIds.has(companyId) || !activeIds.has(companyId)) return false;
-    const bankAssignment = bank.companyAssignments.find((assigned) => String(assigned.companyId) === companyId);
-    if (bankAssignment.branches.length) {
-      const previouslyLimited = item.branches.length > 0;
-      const branches = previouslyLimited
-        ? item.branches.filter((branch) => bankAssignment.branches.includes(branch))
-        : bankAssignment.branches;
-      if (previouslyLimited && !branches.length) return false;
-      item.branches = branches;
-    }
-    return true;
-  });
-  const bankLoanTypeIds = new Set(bank.loanTypeIds.map(String));
-  manager.loanTypeIds = manager.loanTypeIds.filter((item) => bankLoanTypeIds.has(String(item)));
+  if (manager.bankType === 'bank') {
+    const bank = await Bank.findOne({ _id: manager.bankId, deletedAt: null, status: 'active' });
+    if (!bank) throw new ApiError(403, 'The bank account for this employee is not active');
+    const activeIds = new Set(await activeCompanyIds(manager.companyAssignments));
+    manager.companyAssignments = manager.companyAssignments.filter((item) => activeIds.has(String(item.companyId)));
+    const published = await LoanType.find({ _id: { $in: manager.loanTypeIds }, status: 'published', deletedAt: null }).select('_id').lean();
+    const publishedIds = new Set(published.map((item) => String(item._id)));
+    manager.loanTypeIds = manager.loanTypeIds.filter((item) => publishedIds.has(String(item)));
+  } else {
+    const bank = await BankPortal.findOne({ _id: manager.bankId, deletedAt: null, status: 'active' });
+    if (!bank) throw new ApiError(403, 'The bank portal for this account is not active');
+    const bankCompanyIds = new Set(bank.companyAssignments.map((item) => String(item.companyId)));
+    const activeIds = new Set(await activeCompanyIds(manager.companyAssignments));
+    manager.companyAssignments = manager.companyAssignments.filter((item) => {
+      const companyId = String(item.companyId);
+      if (!bankCompanyIds.has(companyId) || !activeIds.has(companyId)) return false;
+      const bankAssignment = bank.companyAssignments.find((assigned) => String(assigned.companyId) === companyId);
+      if (bankAssignment.branches.length) {
+        const previouslyLimited = item.branches.length > 0;
+        const branches = previouslyLimited
+          ? item.branches.filter((branch) => bankAssignment.branches.includes(branch))
+          : bankAssignment.branches;
+        if (previouslyLimited && !branches.length) return false;
+        item.branches = branches;
+      }
+      return true;
+    });
+    const bankLoanTypeIds = new Set(bank.loanTypeIds.map(String));
+    manager.loanTypeIds = manager.loanTypeIds.filter((item) => bankLoanTypeIds.has(String(item)));
+  }
   return manager;
 };
 const leadScope = (manager) => {
@@ -68,6 +79,7 @@ const leadScope = (manager) => {
   return {
     managerId: manager._id,
     deletedAt: null,
+    bankType: manager.bankType === 'bank' ? 'bank' : { $in: ['bankPortal', null] },
     loanTypeId: { $in: manager.loanTypeIds },
     $or: assignments.length ? assignments : [{ companyId: null }],
   };
@@ -81,40 +93,12 @@ exports.options = asyncHandler(async (req, res) => {
   res.json({ success: true, data: { companies, loanTypes } });
 });
 
-exports.register = asyncHandler(async (req, res) => {
-  const { bankName, authorisedPersonName, phone, employeeId, email, password, companyAssignments = [], loanTypeIds = [] } = req.body;
-  const companyIds = companyAssignments.map((item) => item.companyId);
-  if (!companyIds.length) throw new ApiError(422, 'Assign at least one company');
-  await activeCompanies(companyIds);
-  const types = await LoanType.countDocuments({ _id: { $in: loanTypeIds }, status: 'published', deletedAt: null });
-  if (!loanTypeIds.length || types !== new Set(loanTypeIds.map(String)).size) throw new ApiError(422, 'Select available loan types');
-  if (await User.exists({ role: 'bankPortal', companyId: null, email, deletedAt: null })) throw new ApiError(409, 'This email is already registered for a bank portal');
-  if (await BankPortal.exists({ employeeId, deletedAt: null })) throw new ApiError(409, 'This employee ID is already registered');
-  let user;
-  try {
-    user = await User.create({ role: 'bankPortal', name: bankName, email, phone, passwordHash: await hashPassword(password), status: 'active' });
-  } catch (error) {
-    if (error.code === 11000) throw new ApiError(409, 'This email is already registered for a bank portal');
-    throw error;
-  }
-  try {
-    const bank = await BankPortal.create({ userId: user._id, bankName, authorisedPersonName, email, phone, employeeId, companyAssignments, loanTypeIds });
-    await audit(req, { action: 'REGISTER', entity: 'bankPortal', entityId: bank._id, meta: { bankName }, user });
-    res.status(201).json({ success: true, message: 'Bank portal account created', data: { id: bank._id } });
-  } catch (error) {
-    await BankPortal.deleteOne({ userId: user._id });
-    await User.deleteOne({ _id: user._id });
-    if (error.code === 11000) throw new ApiError(409, 'This email or employee ID is already registered');
-    throw error;
-  }
-});
-
 exports.dashboard = asyncHandler(async (req, res) => {
   const bank = await bankFor(req.user._id);
   const [managers, leads, stages] = await Promise.all([
-    SalesManager.countDocuments({ bankId: bank._id, deletedAt: null }),
-    SalesLead.countDocuments({ bankId: bank._id, deletedAt: null }),
-    SalesLead.aggregate([{ $match: { bankId: bank._id, deletedAt: null } }, { $group: { _id: '$stage', count: { $sum: 1 } } }]),
+    SalesManager.countDocuments({ bankId: bank._id, bankType: { $in: ['bankPortal', null] }, deletedAt: null }),
+    SalesLead.countDocuments({ bankId: bank._id, bankType: { $in: ['bankPortal', null] }, deletedAt: null }),
+    SalesLead.aggregate([{ $match: { bankId: bank._id, bankType: { $in: ['bankPortal', null] }, deletedAt: null } }, { $group: { _id: '$stage', count: { $sum: 1 } } }]),
   ]);
   const companyIds = await activeCompanyIds(bank.companyAssignments);
   const companies = await Company.find({ _id: { $in: companyIds }, deletedAt: null, status: 'live', enabled: true, blocked: false }).select('name').lean();
@@ -194,7 +178,7 @@ exports.updateBank = asyncHandler(async (req, res) => {
 
 exports.listEmployees = asyncHandler(async (req, res) => {
   const bank = await bankFor(req.user._id);
-  const query = { bankId: bank._id, deletedAt: null };
+  const query = { bankId: bank._id, bankType: { $in: ['bankPortal', null] }, deletedAt: null };
   if (req.query.search) {
     const regex = new RegExp(escapeRegex(req.query.search), 'i');
     query.$or = [{ name: regex }, { employeeId: regex }, { email: regex }];
@@ -220,23 +204,23 @@ exports.saveEmployee = asyncHandler(async (req, res) => {
   const allowedTypes = bank.loanTypeIds.map(String);
   if (loanTypeIds.some((typeId) => !allowedTypes.includes(String(typeId)))) throw new ApiError(403, 'Employees can only be assigned to your loan types');
   if (req.params.id) {
-    const employee = await SalesManager.findOne({ _id: req.params.id, bankId: bank._id, deletedAt: null });
+    const employee = await SalesManager.findOne({ _id: req.params.id, bankId: bank._id, bankType: { $in: ['bankPortal', null] }, deletedAt: null });
     if (!employee) throw new ApiError(404, 'Sales employee not found');
     if (await User.exists({ role: 'salesManager', companyId: null, email, deletedAt: null, _id: { $ne: employee.userId } })) throw new ApiError(409, 'This email is already registered as a sales employee');
-    if (await SalesManager.exists({ bankId: bank._id, employeeId, deletedAt: null, _id: { $ne: employee._id } })) throw new ApiError(409, 'This employee ID is already in use by your bank');
+    if (await SalesManager.exists({ bankId: bank._id, bankType: { $in: ['bankPortal', null] }, employeeId, deletedAt: null, _id: { $ne: employee._id } })) throw new ApiError(409, 'This employee ID is already in use by your bank');
     Object.assign(employee, { name, employeeId, email, phone, designation, companyAssignments, loanTypeIds });
     await employee.save();
     await User.updateOne({ _id: employee.userId }, { name, email, phone, ...(password ? { passwordHash: await hashPassword(password), passwordChangedAt: new Date() } : {}) });
     return res.json({ success: true, message: 'Sales employee updated', data: employee });
   }
   if (await User.exists({ role: 'salesManager', companyId: null, email, deletedAt: null })) throw new ApiError(409, 'This email is already registered as a sales employee');
-  if (await SalesManager.exists({ bankId: bank._id, employeeId, deletedAt: null })) throw new ApiError(409, 'This employee ID is already in use by your bank');
+  if (await SalesManager.exists({ bankId: bank._id, bankType: { $in: ['bankPortal', null] }, employeeId, deletedAt: null })) throw new ApiError(409, 'This employee ID is already in use by your bank');
   let profile;
   try {
     ({ profile } = await createAccount({
       Profile: SalesManager,
       user: { role: 'salesManager', name, email, phone, password, status: 'active' },
-      profile: { bankId: bank._id, name, employeeId, email, phone, designation, companyAssignments, loanTypeIds },
+      profile: { bankId: bank._id, bankType: 'bankPortal', name, employeeId, email, phone, designation, companyAssignments, loanTypeIds },
     }));
   } catch (error) {
     if (error.code === 11000) throw new ApiError(409, 'This email or employee ID is already in use');
@@ -248,7 +232,7 @@ exports.saveEmployee = asyncHandler(async (req, res) => {
 
 exports.employeeStatus = asyncHandler(async (req, res) => {
   const bank = await bankFor(req.user._id);
-  const employee = await SalesManager.findOne({ _id: req.params.id, bankId: bank._id, deletedAt: null });
+  const employee = await SalesManager.findOne({ _id: req.params.id, bankId: bank._id, bankType: { $in: ['bankPortal', null] }, deletedAt: null });
   if (!employee) throw new ApiError(404, 'Sales employee not found');
   await setAccountStatus(employee, req.body.action === 'disable' ? 'disabled' : 'active');
   res.json({ success: true, message: `Sales employee ${req.body.action}d`, data: employee });
@@ -256,7 +240,7 @@ exports.employeeStatus = asyncHandler(async (req, res) => {
 
 exports.removeEmployee = asyncHandler(async (req, res) => {
   const bank = await bankFor(req.user._id);
-  const employee = await SalesManager.findOne({ _id: req.params.id, bankId: bank._id, deletedAt: null });
+  const employee = await SalesManager.findOne({ _id: req.params.id, bankId: bank._id, bankType: { $in: ['bankPortal', null] }, deletedAt: null });
   if (!employee) throw new ApiError(404, 'Sales employee not found');
   await softDeleteAccount(employee);
   res.json({ success: true, message: 'Sales employee deleted' });
@@ -295,7 +279,11 @@ exports.leads = asyncHandler(async (req, res) => {
   }
   if (req.query.search) {
     const regex = new RegExp(escapeRegex(req.query.search), 'i');
-    query.$or = [{ leadId: regex }, { customerName: regex }, { connector: regex }];
+    query.$and = [
+      { $or: query.$or },
+      { $or: [{ leadId: regex }, { customerName: regex }, { connector: regex }] },
+    ];
+    delete query.$or;
   }
   const [items, total] = await Promise.all([
     SalesLead.find(query).populate('companyId', 'name').populate('loanTypeId', 'name').sort(sort).skip(skip).limit(limit).lean(),
@@ -313,7 +301,7 @@ exports.saveLead = asyncHandler(async (req, res) => {
   if (!manager.loanTypeIds.some((typeId) => String(typeId) === loanTypeId)) throw new ApiError(403, 'You are not assigned to this loan type');
   const assignment = manager.companyAssignments.find((item) => String(item.companyId) === companyId);
   if (req.body.branch && assignment.branches.length && !assignment.branches.includes(req.body.branch)) throw new ApiError(403, 'You are not assigned to this branch');
-  const payload = { ...req.body, bankId: manager.bankId, managerId: manager._id, stageHistory: [{ stage: req.body.stage || 'Lead Created', remarks: req.body.remarks || '' }] };
+  const payload = { ...req.body, bankId: manager.bankId, bankType: manager.bankType || 'bankPortal', managerId: manager._id, stageHistory: [{ stage: req.body.stage || 'Lead Created', remarks: req.body.remarks || '' }] };
   if (req.params.id) {
     const lead = await SalesLead.findOne({ _id: req.params.id, ...leadScope(manager) });
     if (!lead) throw new ApiError(404, 'Lead not found');

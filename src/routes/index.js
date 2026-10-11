@@ -6,8 +6,8 @@ router.get('/health', (req, res) => res.json({ success: true, status: 'ok' }));
 router.use('/auth', require('./authRoutes'));
 router.use('/public', require('./publicRoutes'));
 router.use('/boss', require('./bossRoutes'));
-// published loan types for dropdowns (admin / bank / dsa forms)
-router.get('/loan-types/options', protect, allow('boss', 'admin', 'bank', 'dsa', 'employee'), loanType.options);
+// published loan types for dropdowns
+router.get('/loan-types/options', protect, allow('boss', 'admin', 'bank', 'dsa', 'employee', 'connector'), loanType.options);
 router.use('/register', require('./registerRoutes'));
 router.use('/profile', require('./profileRoutes'));
 router.use('/admin', require('./adminRoutes'));

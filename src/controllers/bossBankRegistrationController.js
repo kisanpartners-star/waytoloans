@@ -285,20 +285,22 @@ exports.submit = asyncHandler(async (req, res) => {
     user.name = registration.authorisedPersonName;
     user.email = email;
     user.phone = registration.mobileNumber;
-    user.status = 'pending';
+    user.status = 'active';
+    user.selfRegistered = false;
     user.passwordHash = registration.loginPasswordHash;
     user.passwordChangedAt = new Date();
     user.mustChangePassword = false;
     user.refreshTokens = [];
     await user.save();
-    bank.status = 'pending';
+    bank.status = 'active';
+    bank.selfRegistered = false;
     await bank.save();
-    registration.status = 'pending';
+    registration.status = 'active';
     registration.accountDisabled = false;
     await registration.save();
     delete registration._doc.loginPasswordHash;
-    await audit(req, { action: 'SUBMIT', entity: 'bankRegistration', entityId: registration._id, meta: { bankName: registration.bankName, status: 'pending' }, companyId: company._id });
-    return res.status(201).json({ success: true, message: 'Bank registration resubmitted for admin approval', data: registration });
+    await audit(req, { action: 'SUBMIT', entity: 'bankRegistration', entityId: registration._id, meta: { bankName: registration.bankName, status: 'active' }, companyId: company._id });
+    return res.status(201).json({ success: true, message: 'Bank registration resubmitted. The bank can sign in now.', data: registration });
   }
 
   const { profile, user } = await createAccount({
@@ -310,7 +312,8 @@ exports.submit = asyncHandler(async (req, res) => {
       email,
       phone: registration.mobileNumber,
       passwordHash: registration.loginPasswordHash,
-      status: 'pending',
+      status: 'active',
+      selfRegistered: false,
     },
     profile: {
       bankName: registration.bankName,
@@ -329,15 +332,15 @@ exports.submit = asyncHandler(async (req, res) => {
       informationAccuracyConfirmed: registration.informationAccuracyConfirmed,
       authorisationConfirmed: registration.authorisationConfirmed,
       dataProtectionAccepted: registration.dataProtectionAccepted,
-      selfRegistered: true,
-      status: 'pending',
+      selfRegistered: false,
+      status: 'active',
       registrationId: registration._id,
     },
   });
 
   try {
     registration.bankId = profile._id;
-    registration.status = 'pending';
+    registration.status = 'active';
     registration.currentStep = 5;
     await registration.save();
     delete registration._doc.loginPasswordHash;
@@ -347,8 +350,8 @@ exports.submit = asyncHandler(async (req, res) => {
     throw error;
   }
 
-  await audit(req, { action: 'SUBMIT', entity: 'bankRegistration', entityId: registration._id, meta: { bankName: registration.bankName, status: 'pending' }, companyId: company._id });
-  res.status(201).json({ success: true, message: 'Bank registration submitted for admin approval', data: registration });
+  await audit(req, { action: 'SUBMIT', entity: 'bankRegistration', entityId: registration._id, meta: { bankName: registration.bankName, status: 'active' }, companyId: company._id });
+  res.status(201).json({ success: true, message: 'Bank registration submitted. The bank can sign in now.', data: registration });
 });
 
 exports.setStatus = asyncHandler(async (req, res) => {
@@ -377,7 +380,7 @@ exports.setStatus = asyncHandler(async (req, res) => {
   registration.accountDisabled = req.body.action === 'disable';
   if (registration.bankId) {
     const bank = await Bank.findById(registration.bankId);
-    if (bank && (bank.status === 'active' || (req.body.action === 'enable' && bank.status === 'disabled' && bank.reviewedAt))) {
+    if (bank && (bank.status === 'active' || (req.body.action === 'enable' && bank.status === 'disabled'))) {
       const nextStatus = registration.accountDisabled ? 'disabled' : 'active';
       bank.status = nextStatus;
       await bank.save();

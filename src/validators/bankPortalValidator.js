@@ -18,18 +18,6 @@ const policy = Joi.object({
   active: Joi.boolean().default(true),
 });
 
-exports.registration = Joi.object({
-  bankName: Joi.string().trim().min(2).max(120).required(),
-  authorisedPersonName: Joi.string().trim().min(2).max(120).required(),
-  phone: phone.required(),
-  employeeId: Joi.string().trim().min(1).max(40).required(),
-  email: Joi.string().email().lowercase().trim().required(),
-  password,
-  confirmPassword: Joi.any().valid(Joi.ref('password')).required().messages({ 'any.only': 'Passwords do not match' }),
-  companyAssignments: Joi.array().items(assignment).min(1).max(100).unique('companyId').required(),
-  loanTypeIds: Joi.array().items(objectId).min(1).max(50).unique().required(),
-});
-
 exports.bankUpdate = Joi.object({
   bankName: Joi.string().trim().min(2).max(120),
   authorisedPersonName: Joi.string().trim().min(2).max(120),
