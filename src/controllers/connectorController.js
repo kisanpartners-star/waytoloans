@@ -67,6 +67,11 @@ exports.updateLead = asyncHandler(async (req, res) => {
       settlementDetails: application.settlementDetails,
       recentApplications: application.recentApplications,
       hasRecentApplications: application.hasRecentApplications,
+      businessDetails: application.businessDetails,
+      businessApplicant: application.businessApplicant,
+      coApplicantDetails: application.coApplicantDetails,
+      partnersDirectors: application.partnersDirectors,
+      homeLoanDetails: application.homeLoanDetails,
       eligibility,
       documents: [...lead.documents, ...(req.files || []).map((file, index) => ({
         category: categories[index],
@@ -390,6 +395,11 @@ exports.createLead = asyncHandler(async (req, res) => {
       settlementDetails: application.settlementDetails,
       recentApplications: application.recentApplications,
       hasRecentApplications: application.hasRecentApplications,
+      businessDetails: application.businessDetails,
+      businessApplicant: application.businessApplicant,
+      coApplicantDetails: application.coApplicantDetails,
+      partnersDirectors: application.partnersDirectors,
+      homeLoanDetails: application.homeLoanDetails,
       documents,
       eligibility,
     });

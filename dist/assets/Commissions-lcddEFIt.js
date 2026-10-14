@@ -1,0 +1,1 @@
+import{j as o,q as i}from"./index-CzIRxhmO.js";import{C as s}from"./ComingSoon-CTPLnu8f.js";function t(){return o.jsx(s,{icon:i,title:"Commissions",description:"Referral earnings and payout history."})}export{t as default};

@@ -9,6 +9,8 @@ const allowed = {
   'application/pdf': ['.pdf'],
   'image/jpeg': ['.jpg', '.jpeg'],
   'image/png': ['.png'],
+  'video/mp4': ['.mp4'],
+  'video/webm': ['.webm'],
 };
 
 const storage = multer.diskStorage({
@@ -22,7 +24,7 @@ const storage = multer.diskStorage({
 const fileFilter = (req, file, callback) => {
   const extension = path.extname(file.originalname).toLowerCase();
   if (allowed[file.mimetype]?.includes(extension)) return callback(null, true);
-  callback(new ApiError(422, 'Upload documents as PDF, JPG or PNG files'));
+  callback(new ApiError(422, 'Upload documents as PDF, JPG or PNG files and property videos as MP4 or WebM'));
 };
 
 const upload = multer({

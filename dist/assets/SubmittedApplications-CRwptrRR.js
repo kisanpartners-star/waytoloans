@@ -1,0 +1,1 @@
+import{j as t}from"./index-CzIRxhmO.js";import{S as i}from"./SubmittedApplicationsPage-2LvfbuQy.js";import"./PageHeader-C5kX-KQ5.js";import"./submittedApplicationsApi-DXb2E6w2.js";function n(){return t.jsx(i,{endpoint:"/admin/applications"})}export{n as default};

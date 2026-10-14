@@ -1,1 +1,0 @@
-import{j as r}from"./index-COaLGlsY.js";import{P as o}from"./ProfileView-BXMByJyX.js";import"./PageHeader-DbTgt8GX.js";import"./Card-NIgC-0mn.js";import"./Badge-Zw8F5zeX.js";import"./useAsync-BPAsV2qW.js";import"./commonApi-C3iF5E7V.js";function a(){return r.jsx(o,{})}export{a as default};

@@ -1,0 +1,1 @@
+import{j as o,O as t}from"./index-CzIRxhmO.js";import{C as r}from"./ComingSoon-CTPLnu8f.js";function p(){return o.jsx(r,{icon:t,title:"Support",description:"Get help from your bank administrator."})}export{p as default};
