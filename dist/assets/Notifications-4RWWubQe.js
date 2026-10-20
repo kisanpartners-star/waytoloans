@@ -1,0 +1,1 @@
+import{j as o,J as i}from"./index-D-Po3_VR.js";import{C as t}from"./ComingSoon-DIo1VRju.js";function n(){return o.jsx(t,{icon:i,title:"Notifications",description:"Alerts about applications, approvals and policy changes."})}export{n as default};

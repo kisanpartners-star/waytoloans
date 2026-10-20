@@ -1,1 +1,0 @@
-import{j as n,J as o}from"./index-CzIRxhmO.js";import{C as t}from"./ComingSoon-CTPLnu8f.js";function a(){return n.jsx(t,{icon:o,title:"Notifications",description:"Send announcements and alerts to banks, DSAs and connectors."})}export{a as default};

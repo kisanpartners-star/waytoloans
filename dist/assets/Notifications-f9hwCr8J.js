@@ -1,0 +1,1 @@
+import{j as i,J as o}from"./index-D-Po3_VR.js";import{C as n}from"./ComingSoon-DIo1VRju.js";function e(){return i.jsx(n,{icon:o,title:"Notifications",description:"Send and manage in-app notifications for every panel."})}export{e as default};
