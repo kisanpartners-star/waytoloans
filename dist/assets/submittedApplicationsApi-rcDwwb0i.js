@@ -1,1 +1,0 @@
-import{A as o,D as s}from"./index-D-Po3_VR.js";const i={list:(t,a)=>o(s.get(t,{params:{page:a,limit:50}})),download:t=>s.get(t,{responseType:"blob"}),team:(t,a)=>o(s.get(`/connector/leads/${t}/applications/${a}/team`)),submit:(t,a,p)=>o(s.post(`/connector/leads/${t}/applications`,{bankId:a,assigneeUserIds:p}))};export{i as s};

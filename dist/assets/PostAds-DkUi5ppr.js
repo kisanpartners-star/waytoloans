@@ -1,1 +1,0 @@
-import{j as o,aH as n}from"./index-D-Po3_VR.js";import{C as s}from"./ComingSoon-DIo1VRju.js";function i(){return o.jsx(s,{icon:n,title:"Post Ads",description:"Publish announcements and promotions to company panels and landing pages."})}export{i as default};

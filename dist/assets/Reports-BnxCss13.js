@@ -1,1 +1,0 @@
-import{j as o,K as r}from"./index-D-Po3_VR.js";import{C as t}from"./ComingSoon-DIo1VRju.js";function n(){return o.jsx(t,{icon:r,title:"Reports",description:"Your daily and monthly performance reports."})}export{n as default};

@@ -1,1 +1,0 @@
-import{j as t}from"./index-D-Po3_VR.js";import{S as o}from"./SubmittedApplicationsPage-CntWDqW8.js";import"./PageHeader-D5GMZ_BL.js";import"./submittedApplicationsApi-rcDwwb0i.js";function a(){return t.jsx(o,{endpoint:"/connector/applications"})}export{a as default};

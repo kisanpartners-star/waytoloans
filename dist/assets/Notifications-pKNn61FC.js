@@ -1,1 +1,0 @@
-import{j as o,J as t}from"./index-D-Po3_VR.js";import{C as i}from"./ComingSoon-DIo1VRju.js";function n(){return o.jsx(i,{icon:t,title:"Notifications",description:"Status updates on your referrals."})}export{n as default};

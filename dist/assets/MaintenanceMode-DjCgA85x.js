@@ -1,1 +1,0 @@
-import{j as o,ax as e}from"./index-D-Po3_VR.js";import{C as n}from"./ComingSoon-DIo1VRju.js";function i(){return o.jsx(n,{icon:e,title:"Maintenance Mode",description:"Put a single company or the whole platform into maintenance with a custom message and schedule."})}export{i as default};

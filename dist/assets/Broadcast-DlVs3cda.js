@@ -1,1 +1,0 @@
-import{j as a,ap as o}from"./index-D-Po3_VR.js";import{C as s}from"./ComingSoon-DIo1VRju.js";function i(){return a.jsx(s,{icon:o,title:"Broadcast, Mails & Campaigns",description:"Compose email broadcasts and campaigns to companies, banks, DSAs and connectors."})}export{i as default};

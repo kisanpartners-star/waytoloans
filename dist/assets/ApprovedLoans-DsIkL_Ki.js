@@ -1,0 +1,1 @@
+import{j as o}from"./index-H836rT8f.js";import r from"./SalesLeads-D3Ywup7A.js";import"./PageHeader-zz34OAmA.js";import"./Card-DcoxE8i2.js";import"./Badge-DalOFDO-.js";import"./bankPortalApi-CNhXdjQ3.js";function a(){return o.jsx(r,{title:"Approved Loans",filterStage:"Approved"})}export{a as default};

@@ -1,1 +1,0 @@
-import{E as e,D as o,A as a}from"./index-D-Po3_VR.js";const t={loanTypeOptions:()=>a(o.get("/loan-types/options")),dashboard:p=>a(o.get(`/${p}/dashboard`)),profile:()=>a(o.get("/profile")),updateProfile:p=>e(o.put("/profile",p))};export{t as c};

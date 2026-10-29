@@ -1,1 +1,0 @@
-import{j as o,J as i}from"./index-D-Po3_VR.js";import{C as t}from"./ComingSoon-DIo1VRju.js";function s(){return o.jsx(t,{icon:i,title:"Notifications",description:"Task reminders and updates from your bank."})}export{s as default};

@@ -1,1 +1,0 @@
-import{j as o,q as s}from"./index-D-Po3_VR.js";import{C as t}from"./ComingSoon-DIo1VRju.js";function r(){return o.jsx(t,{icon:s,title:"Commissions",description:"Payout statements for DSAs and connectors."})}export{r as default};

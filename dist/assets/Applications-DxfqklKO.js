@@ -1,0 +1,1 @@
+import{j as t}from"./index-H836rT8f.js";import{S as o}from"./SubmittedApplicationsPage-CD-LEbay.js";import"./PageHeader-zz34OAmA.js";import"./submittedApplicationsApi-vV_E24RL.js";function a(){return t.jsx(o,{endpoint:"/connector/applications"})}export{a as default};
