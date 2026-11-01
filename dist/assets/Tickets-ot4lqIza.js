@@ -1,1 +1,0 @@
-import{j as e,O as s}from"./index-B0FNf3tv.js";import{C as o}from"./ComingSoon-CSPaIriF.js";function r(){return e.jsx(o,{icon:s,title:"Tickets",description:"A support desk where companies raise issues and your team resolves them."})}export{r as default};

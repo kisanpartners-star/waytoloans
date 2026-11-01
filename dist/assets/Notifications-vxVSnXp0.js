@@ -1,0 +1,1 @@
+import{j as o,J as i}from"./index-C-HG83vF.js";import{C as t}from"./ComingSoon-DORcxliw.js";function s(){return o.jsx(t,{icon:i,title:"Notifications",description:"Updates from banks and your company admin."})}export{s as default};

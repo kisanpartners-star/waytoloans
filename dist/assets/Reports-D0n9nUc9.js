@@ -1,0 +1,1 @@
+import{j as r,K as o}from"./index-C-HG83vF.js";import{C as t}from"./ComingSoon-DORcxliw.js";function s(){return r.jsx(t,{icon:o,title:"Reports",description:"Disbursement, rejection and turnaround reports for your bank."})}export{s as default};

@@ -1,0 +1,1 @@
+import{j as t}from"./index-C-HG83vF.js";import r from"./SalesLeads-DzpomdrF.js";import"./PageHeader-WGP2USdp.js";import"./Card-D90hEQ83.js";import"./Badge-DP8_ywX-.js";import"./bankPortalApi-BmCvMW9I.js";function a(){return t.jsx(r,{title:"My Leads"})}export{a as default};

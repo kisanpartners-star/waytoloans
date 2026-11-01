@@ -1,0 +1,1 @@
+import{j as t}from"./index-C-HG83vF.js";import{S as o}from"./SubmittedApplicationsPage-DBX_txDZ.js";import"./PageHeader-WGP2USdp.js";import"./submittedApplicationsApi-CvkdMtqj.js";function a(){return t.jsx(o,{endpoint:"/connector/applications"})}export{a as default};

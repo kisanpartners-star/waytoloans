@@ -1,0 +1,1 @@
+import{j as r,K as o}from"./index-C-HG83vF.js";import{C as t}from"./ComingSoon-DORcxliw.js";function i(){return r.jsx(t,{icon:o,title:"Reports",description:"Referral and conversion reports."})}export{i as default};

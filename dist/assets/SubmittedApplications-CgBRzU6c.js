@@ -1,0 +1,1 @@
+import{j as t}from"./index-C-HG83vF.js";import{S as i}from"./SubmittedApplicationsPage-DBX_txDZ.js";import"./PageHeader-WGP2USdp.js";import"./submittedApplicationsApi-CvkdMtqj.js";function e(){return t.jsx(i,{endpoint:"/sales-manager/submitted-applications"})}export{e as default};
