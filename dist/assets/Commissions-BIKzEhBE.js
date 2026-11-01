@@ -1,0 +1,1 @@
+import{j as i,q as o}from"./index-B0FNf3tv.js";import{C as s}from"./ComingSoon-CSPaIriF.js";function m(){return i.jsx(s,{icon:o,title:"Commissions",description:"View earned and pending commissions."})}export{m as default};
