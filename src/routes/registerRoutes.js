@@ -1,11 +1,14 @@
-// Public self-registration, per company slug.
+// Public self-registration for company-scoped roles and DSA applicants.
 const router = require('express').Router();
 const { validate } = require('../middleware/validate');
 const { registerLimiter } = require('../middleware/rateLimit');
 const c = require('../controllers/registerController');
+const dsaApplications = require('../controllers/dsaApplicationController');
+const dsaApplicationValidator = require('../validators/dsaApplicationValidator');
 const bv = require('../validators/bankValidator'); const cv = require('../validators/connectorValidator');
 const ev = require('../validators/companyEmployeeValidator');
 const { employeePhotoUpload } = require('../middleware/upload');
+router.post('/dsa', registerLimiter, validate(dsaApplicationValidator.register), dsaApplications.register);
 router.post('/:slug/bank', registerLimiter, validate(bv.register), c.registerBank);
 router.post('/:slug/connector', registerLimiter, validate(cv.register), c.registerConnector);
 router.get('/:slug/employee/options', c.employeeOptions);

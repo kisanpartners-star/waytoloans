@@ -1,1 +1,0 @@
-import{j as r}from"./index-C-HG83vF.js";import{C as o}from"./ChangePasswordForm-DrXSaM_X.js";import"./PageHeader-WGP2USdp.js";import"./Card-D90hEQ83.js";function e(){return r.jsx(o,{})}export{e as default};

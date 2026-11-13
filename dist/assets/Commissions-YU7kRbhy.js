@@ -1,1 +1,0 @@
-import{j as o,q as s}from"./index-C-HG83vF.js";import{C as i}from"./ComingSoon-DORcxliw.js";function r(){return o.jsx(i,{icon:s,title:"Commissions",description:"Configure commission slabs and track payouts for DSAs and connectors."})}export{r as default};

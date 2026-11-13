@@ -7,6 +7,7 @@ const Bank = require('../models/Bank');
 const BankRegistration = require('../models/BankRegistration');
 const SalesManager = require('../models/SalesManager');
 const Setting = require('../models/Setting');
+const DsaApplication = require('../models/DsaApplication');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 const { comparePassword, hashPassword } = require('../utils/password');
@@ -36,17 +37,29 @@ async function issueSession(req, res, user) {
 exports.login = asyncHandler(async (req, res) => {
   const { role, companySlug, identifier, password } = req.body;
   let company = null;
-  if (!GLOBAL_ROLES.includes(role)) {
+  if (!GLOBAL_ROLES.includes(role) && companySlug) {
     company = await Company.findOne({ slug: companySlug, deletedAt: null });
     if (!company || company.status === 'draft') throw new ApiError(404, 'Company panel not found');
   }
   const id = identifier.toLowerCase();
-  let user = await User.findOne({ role, companyId: company ? company._id : null, deletedAt: null, $or: [{ email: id }, { loginId: identifier }] }).select('+passwordHash +refreshTokens');
+  let user;
   let verifiedBankLogin = false;
   const fail = async (status, msg, why) => {
     await audit(req, { action: 'LOGIN_FAILED', entity: 'auth', meta: { identifier, role, why }, success: false, user: user || { role, name: identifier }, companyId: company ? company._id : null });
     throw new ApiError(status, msg);
   };
+  if (!GLOBAL_ROLES.includes(role) && !companySlug && ['admin', 'dsa'].includes(role)) {
+    const candidates = await User.find({ role, deletedAt: null, $or: [{ email: id }, { loginId: identifier }] }).select('+passwordHash +refreshTokens');
+    const matches = [];
+    for (const candidate of candidates) {
+      if (await comparePassword(password, candidate.passwordHash)) matches.push(candidate);
+    }
+    if (matches.length > 1) return fail(409, 'These credentials match more than one account. Contact your administrator.', 'ambiguous_account');
+    user = matches[0] || candidates[0];
+    if (user?.companyId) company = await Company.findOne({ _id: user.companyId, deletedAt: null });
+  } else {
+    user = await User.findOne({ role, companyId: company ? company._id : null, deletedAt: null, $or: [{ email: id }, { loginId: identifier }] }).select('+passwordHash +refreshTokens');
+  }
   if (role === 'bankPortal') {
     const bankProfiles = await Bank.find({ email: id, registrationId: { $ne: null }, deletedAt: null }).select('userId companyId registrationId status').lean();
     const candidates = await User.find({
@@ -107,7 +120,13 @@ exports.login = asyncHandler(async (req, res) => {
     return fail(401, 'Invalid credentials', 'bad_password');
   }
   if (company) { const cb = companyBlockReason(company); if (cb) return fail(403, cb, 'company_status'); }
-  const ub = userBlockReason(user);
+  const pendingDsaApplication = role === 'dsa' && user.status === 'pending'
+    && await DsaApplication.exists({ userId: user._id, status: 'pending' });
+  if (['admin', 'dsa'].includes(role) && user.status !== 'pending' && !user.companyId) {
+    return fail(403, 'Your company account is unavailable. Contact the platform administrator.', 'missing_company');
+  }
+  if (user.companyId && !company) return fail(403, 'Your company account is unavailable. Contact the platform administrator.', 'missing_company');
+  const ub = pendingDsaApplication ? null : userBlockReason(user);
   if (ub) return fail(403, ub, 'user_status');
   const pb = await parentBlockReason(user);
   if (pb) return fail(403, pb, 'parent_status');
@@ -132,9 +151,11 @@ exports.refresh = asyncHandler(async (req, res) => {
     throw new ApiError(401, 'Session expired');
   }
   user.refreshTokens.splice(idx, 1);
-  const ub = userBlockReason(user);
+  const pendingDsaApplication = user.role === 'dsa' && user.status === 'pending'
+    && await DsaApplication.exists({ userId: user._id, status: 'pending' });
+  const ub = pendingDsaApplication ? null : userBlockReason(user);
   let cb = null;
-  if (!GLOBAL_ROLES.includes(user.role)) cb = companyBlockReason(await Company.findById(user.companyId));
+  if (!GLOBAL_ROLES.includes(user.role) && !pendingDsaApplication) cb = companyBlockReason(await Company.findById(user.companyId));
   if (ub || cb) { await user.save(); clearAuthCookies(res); throw new ApiError(403, ub || cb); }
   await issueSession(req, res, user);
   res.json({ success: true, message: 'Token refreshed' });
@@ -176,14 +197,20 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
   const { role, companySlug, email } = req.body;
   const generic = { success: true, message: 'If the account exists, a reset link has been sent to the email.' };
   let company = null;
-  if (!GLOBAL_ROLES.includes(role)) { company = await Company.findOne({ slug: companySlug, deletedAt: null }); if (!company) return res.json(generic); }
-  const user = await User.findOne({ role, email, companyId: company ? company._id : null, deletedAt: null });
+  if (!GLOBAL_ROLES.includes(role) && companySlug) { company = await Company.findOne({ slug: companySlug, deletedAt: null }); if (!company) return res.json(generic); }
+  const user = await User.findOne({
+    role,
+    ...(company ? { companyId: company._id } : companySlug ? { companyId: null } : ['admin', 'dsa'].includes(role) ? {} : { companyId: null }),
+    email,
+    deletedAt: null,
+  });
   if (!user) return res.json(generic);
+  if (!company && user.companyId) company = await Company.findById(user.companyId);
   const raw = crypto.randomBytes(32).toString('hex');
   user.resetTokenHash = hash(raw);
   user.resetTokenExpires = new Date(Date.now() + 30 * 60000);
   await user.save();
-  const prefix = role === 'boss' ? `/${env.bossPanelPath}` : role === 'bankPortal' ? '/bank-portal' : role === 'salesManager' ? '/sales-manager' : `/${company.slug}/${role}`;
+  const prefix = role === 'boss' ? `/${env.bossPanelPath}` : role === 'bankPortal' ? '/bank-portal' : role === 'salesManager' ? '/sales-manager' : companySlug ? `/${company.slug}/${role}` : `/${role}`;
   await sendMail({ to: user.email, subject: 'Reset your Banks Zone password', text: `Use this link within 30 minutes:\n${env.clientUrls[0]}${prefix}/reset-password?token=${raw}` });
   await audit(req, { action: 'PASSWORD_RESET_REQUEST', entity: 'user', entityId: user._id, user });
   res.json(generic);

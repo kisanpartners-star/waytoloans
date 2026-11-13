@@ -46,6 +46,7 @@ exports.create = asyncHandler(async (req, res) => {
   delete fields.confirmPassword;
   if (await Company.exists({ gstin: fields.gstin, deletedAt: null })) throw new ApiError(409, 'A company with this GSTIN already exists');
   if (await Company.exists({ email: fields.email, deletedAt: null })) throw new ApiError(409, 'A company with this email already exists');
+  if (await User.exists({ role: 'admin', email: fields.email, deletedAt: null })) throw new ApiError(409, 'This email is already used for a company admin login');
   const company = await Company.create({ ...fields, slug: makeCompanySlug(fields.name), brandName: fields.name, status: saveAsDraft ? 'draft' : 'live', createdBy: req.user._id });
   try {
     const admin = await User.create({ role: 'admin', companyId: company._id, name: `${fields.name} Admin`, email: fields.email, phone: fields.phone, passwordHash: await hashPassword(password), status: 'active' });
@@ -62,6 +63,7 @@ exports.update = asyncHandler(async (req, res) => {
   const { password, confirmPassword, ...fields } = req.body;
   if (await Company.exists({ _id: { $ne: company._id }, gstin: fields.gstin, deletedAt: null })) throw new ApiError(409, 'Another company uses this GSTIN');
   if (await Company.exists({ _id: { $ne: company._id }, email: fields.email, deletedAt: null })) throw new ApiError(409, 'Another company uses this email');
+  if (await User.exists({ _id: { $ne: company.adminUserId }, role: 'admin', email: fields.email, deletedAt: null })) throw new ApiError(409, 'This email is already used for a company admin login');
   Object.assign(company, fields);
   await company.save();
   const adminUpdate = { email: fields.email, phone: fields.phone, name: `${fields.name} Admin` };
