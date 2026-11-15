@@ -1,0 +1,1 @@
+import{j as a,H as e}from"./index-BVeA64jt.js";import{C as o}from"./ComingSoon-Dl32Sa0e.js";function n(){return a.jsx(o,{icon:e,title:"Leads",description:"Capture, assign and track loan leads from every channel."})}export{n as default};

@@ -1,0 +1,1 @@
+import{j as o,H as s}from"./index-BVeA64jt.js";import{C as t}from"./ComingSoon-Dl32Sa0e.js";function n(){return o.jsx(t,{icon:s,title:"Leads",description:"Submit and follow up on leads for your assigned banks."})}export{n as default};

@@ -5,6 +5,8 @@ const loanType = require('../controllers/loanTypeController');
 router.get('/health', (req, res) => res.json({ success: true, status: 'ok' }));
 router.use('/auth', require('./authRoutes'));
 router.use('/public', require('./publicRoutes'));
+router.use('/public-loans', require('./publicLoanRoutes'));
+router.use('/visitors', require('./visitorRoutes'));
 router.use('/boss', require('./bossRoutes'));
 // published loan types for dropdowns
 router.get('/loan-types/options', protect, allow('boss', 'admin', 'bank', 'dsa', 'employee', 'connector'), loanType.options);

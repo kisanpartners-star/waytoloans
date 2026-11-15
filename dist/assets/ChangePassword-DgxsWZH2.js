@@ -1,1 +1,0 @@
-import{j as r}from"./index-BDsl6g47.js";import{C as o}from"./ChangePasswordForm-DnqcroSr.js";import"./PageHeader-gI0WYiaJ.js";import"./Card-vbj4ejDw.js";function e(){return r.jsx(o,{})}export{e as default};

@@ -1,0 +1,1 @@
+import{j as i,am as o}from"./index-BVeA64jt.js";import{C as t}from"./ComingSoon-Dl32Sa0e.js";function r(){return i.jsx(t,{icon:o,title:"Applications",description:"Track every application you have sourced."})}export{r as default};

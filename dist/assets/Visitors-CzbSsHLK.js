@@ -1,1 +1,0 @@
-import{j as i,as as s}from"./index-BDsl6g47.js";import{C as o}from"./ComingSoon-VzScCvPJ.js";function n(){return i.jsx(o,{icon:s,title:"Visitors",description:"Track visitors across every company portal with live traffic, sources and conversion insights."})}export{n as default};

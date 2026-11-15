@@ -1,1 +1,0 @@
-import{j as o,av as e}from"./index-BDsl6g47.js";import{C as n}from"./ComingSoon-VzScCvPJ.js";function i(){return o.jsx(n,{icon:e,title:"Maintenance Mode",description:"Put a single company or the whole platform into maintenance with a custom message and schedule."})}export{i as default};
