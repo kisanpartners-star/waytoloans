@@ -1,1 +1,0 @@
-import{j as t}from"./index-BVeA64jt.js";import{S as i}from"./SubmittedApplicationsPage-Dz69KJOn.js";import"./PageHeader-rujRvLjV.js";import"./submittedApplicationsApi-CzksRjEc.js";function r(){return t.jsx(i,{endpoint:"/bank/applications"})}export{r as default};

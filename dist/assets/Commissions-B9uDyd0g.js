@@ -1,0 +1,1 @@
+import{j as o,q as s}from"./index-qzJF5Y8V.js";import{C as t}from"./ComingSoon-gCig0mkm.js";function r(){return o.jsx(t,{icon:s,title:"Commissions",description:"Payout statements for DSAs and connectors."})}export{r as default};

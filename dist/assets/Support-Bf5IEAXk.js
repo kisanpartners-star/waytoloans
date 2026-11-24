@@ -1,0 +1,1 @@
+import{j as t,O as o}from"./index-qzJF5Y8V.js";import{C as i}from"./ComingSoon-gCig0mkm.js";function a(){return t.jsx(i,{icon:o,title:"Support",description:"Raise tickets and talk to the company admin."})}export{a as default};

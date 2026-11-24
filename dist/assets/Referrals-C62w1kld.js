@@ -1,1 +1,0 @@
-import{j as r,aM as e}from"./index-BVeA64jt.js";import{C as o}from"./ComingSoon-Dl32Sa0e.js";function i(){return r.jsx(o,{icon:e,title:"Referrals",description:"Your referral network and its performance."})}export{i as default};

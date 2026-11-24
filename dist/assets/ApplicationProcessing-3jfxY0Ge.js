@@ -1,0 +1,1 @@
+import{j as i}from"./index-qzJF5Y8V.js";import t from"./SalesLeads-CMsdrpe6.js";import"./PageHeader-BnFcOHti.js";import"./Card-DgsEKM4t.js";import"./Badge-swvULho6.js";import"./bankPortalApi-BbUquHvl.js";function a(){return i.jsx(t,{title:"Application Processing",filterStage:"Application Processing"})}export{a as default};

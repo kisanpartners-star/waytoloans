@@ -1,0 +1,1 @@
+import{j as r}from"./index-qzJF5Y8V.js";import t from"./SalesLeads-CMsdrpe6.js";import"./PageHeader-BnFcOHti.js";import"./Card-DgsEKM4t.js";import"./Badge-swvULho6.js";import"./bankPortalApi-BbUquHvl.js";function p(){return r.jsx(t,{title:"Disbursed Loans",filterStage:"Disbursed"})}export{p as default};

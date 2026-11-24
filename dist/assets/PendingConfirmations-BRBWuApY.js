@@ -1,0 +1,1 @@
+import{j as t}from"./index-qzJF5Y8V.js";import i from"./SalesLeads-CMsdrpe6.js";import"./PageHeader-BnFcOHti.js";import"./Card-DgsEKM4t.js";import"./Badge-swvULho6.js";import"./bankPortalApi-BbUquHvl.js";function a(){return t.jsx(i,{title:"Pending Confirmations",filterStage:"Confirmation Requested"})}export{a as default};

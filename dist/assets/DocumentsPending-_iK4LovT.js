@@ -1,0 +1,1 @@
+import{j as t}from"./index-qzJF5Y8V.js";import e from"./SalesLeads-CMsdrpe6.js";import"./PageHeader-BnFcOHti.js";import"./Card-DgsEKM4t.js";import"./Badge-swvULho6.js";import"./bankPortalApi-BbUquHvl.js";function p(){return t.jsx(e,{title:"Documents Pending",filterStage:"Documents Requested"})}export{p as default};

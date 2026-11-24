@@ -1,0 +1,1 @@
+import{j as i,am as o}from"./index-qzJF5Y8V.js";import{C as t}from"./ComingSoon-gCig0mkm.js";function r(){return i.jsx(t,{icon:o,title:"Applications",description:"Track every application you have sourced."})}export{r as default};

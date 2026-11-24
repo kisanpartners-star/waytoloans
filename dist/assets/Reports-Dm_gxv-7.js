@@ -1,0 +1,1 @@
+import{j as o,K as t}from"./index-qzJF5Y8V.js";import{C as r}from"./ComingSoon-gCig0mkm.js";function e(){return o.jsx(r,{icon:t,title:"Reports",description:"Business reports by bank and loan type."})}export{e as default};

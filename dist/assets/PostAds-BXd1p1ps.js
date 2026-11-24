@@ -1,1 +1,0 @@
-import{j as o,aF as n}from"./index-BVeA64jt.js";import{C as s}from"./ComingSoon-Dl32Sa0e.js";function i(){return o.jsx(s,{icon:n,title:"Post Ads",description:"Publish announcements and promotions to company panels and landing pages."})}export{i as default};
